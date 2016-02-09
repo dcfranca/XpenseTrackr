@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainForm.ui.qml</file>
+        <file>utils.js</file>
+        <file>models.js</file>
+        <file>quickmodel.js</file>
+    </qresource>
+</RCC>
