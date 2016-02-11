@@ -38,7 +38,7 @@ ApplicationWindow {
 
     function openTransactionsDialog(categoryId, category, group, parent) {
         transactionsModel.clear()
-        var arr = Utils.convertTitleToMonthYear(page.tabs[page.selectedTab])
+        var arr = Utils.convertTitleToMonthYear(page.tabs[page.selectedTabIndex])
         var month = arr[0];
         var year = arr[1];
         var baseDate = new Date(year, month, 1);
@@ -139,7 +139,7 @@ ApplicationWindow {
                         } else {
                             Models.BudgetItem.filter({id: id}).update({budget: Utils.removeCurrencySymbol(budgetedField.text)});
                             var budgetItem = Models.BudgetItem.filter({id: id}).get()
-                            var balanceUpdated = Utils.calculateBudgetBalance(budgetItem, page.tabs[page.selectedTab])
+                            var balanceUpdated = Utils.calculateBudgetBalance(budgetItem, page.tabs[page.selectedTabIndex])
                             itemCategory.valueText = Utils.formatNumber(balanceUpdated, currencySymbol, decimalSeparator)
                             budgetedField.text = Utils.formatNumber(budgetedField.text, currencySymbol, decimalSeparator);
                         }
@@ -271,15 +271,14 @@ ApplicationWindow {
         id: page
         title: "Budget App"
         tabs: Utils.findMonths()
-        //selectedTab: 1
+        selectedTabIndex: 1
 
         Component.onCompleted: {
-            var arr = Utils.convertTitleToMonthYear(page.tabs[page.selectedTab])
+            var arr = Utils.convertTitleToMonthYear(page.tabs[page.selectedTabIndex])
             var month = arr[0]
             var year = arr[1]
 
-            Utils.loadModelBudgetItems(month, year, modelBudgetItems)
-
+            Utils.loadModelBudgetItems(month, year, modelBudgetItems);
         }
 
         onSelectedTabChanged: {
@@ -287,6 +286,7 @@ ApplicationWindow {
             if (typeof page.tabs === 'undefined')
                 return;
 
+            console.log("2 - PARAM TITLE: "+page.tabs[page.selectedTab]);
             var arr = Utils.convertTitleToMonthYear(page.tabs[page.selectedTab])
             var month = arr[0]
             var year = arr[1]
@@ -352,7 +352,8 @@ ApplicationWindow {
                                 floatingLabel: true
 
                                 Component.onCompleted: {
-                                    var dts = Utils.convertTitleToMonthYear(page.tabs[page.selectedTab]);
+                                    console.log("0 - PARAM TITLE: "+page.tabs[page.selectedTabIndex]);
+                                    var dts = Utils.convertTitleToMonthYear(page.tabs[page.selectedTabIndex]);
                                     var checkin = Models.CheckinAccount.filter({month: dts[0]+1, year: dts[1]}).get();
                                     var value = 0;
                                     if (checkin) {
@@ -366,7 +367,7 @@ ApplicationWindow {
                                     if (activeFocus) {
                                         checkinAccount.text = Utils.removeCurrencySymbol(checkinAccount.text);
                                     } else {
-                                        var dts = Utils.convertTitleToMonthYear(page.tabs[page.selectedTab]);
+                                        var dts = Utils.convertTitleToMonthYear(page.tabs[page.selectedTabIndex]);
                                         var value = Utils.removeCurrencySymbol(checkinAccount.text);
 
                                         if (Models.CheckinAccount.filter({month: dts[0]+1, year: dts[1]}).all().length > 0) {
@@ -385,7 +386,7 @@ ApplicationWindow {
                                 id: totalBalance
                                 text: {
                                     Models.init();
-                                    return Utils.formatNumber(Utils.calculateTotalBalance(page.tabs[page.selectedTab], checkinAccount.text), currencySymbol, decimalSeparator)
+                                    return Utils.formatNumber(Utils.calculateTotalBalance(page.tabs[page.selectedTabIndex], checkinAccount.text), currencySymbol, decimalSeparator)
                                 }
                                 font.pixelSize: Units.dp(25)
                                 anchors.right: parent.right
@@ -477,7 +478,7 @@ ApplicationWindow {
                     var bItem = Models.BudgetItem.filter({id: item.id}).get()
                     if (bItem.category === categoryId) {
                         //WTF?
-                        item.budget = Utils.calculateBudgetBalance(bItem, page.tabs[page.selectedTab])
+                        item.budget = Utils.calculateBudgetBalance(bItem, page.tabs[page.selectedTabIndex])
                         var transactions = Utils.retrieveTransactions(d, categoryId)
                         var sum = Utils.sumTransactions(transactions)
                         item.balance = item.budget - sum

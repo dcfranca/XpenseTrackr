@@ -108,7 +108,7 @@ function calculateTotalBalance(title, checkin) {
     if (!checkin) {
         checkin = 0;
     }
-
+    console.log("1 - PARAM TITLE: "+title);
     var dates = convertTitleToMonthYear(title)
     var date = new Date(dates[1], dates[0], 1)
     var transactions = retrieveTransactions(date)
